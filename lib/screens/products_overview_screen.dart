@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopapp/providers/cart_provider.dart';
+import 'package:shopapp/widgets/badge.dart';
 import 'package:shopapp/widgets/products_grid.dart';
 
 enum PopupOptions {
@@ -41,6 +44,19 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               PopupMenuItem(
                 child: Text('Show All'), value: PopupOptions.All,),
             ],
+          ),
+          Consumer<CartProvider>(
+            // burda parametre olan ch aslında builder fonksiyonunun dışında
+            // tanımlanan IconButton child'ı
+              builder: (_, cart, ch) =>
+                  Badge(
+                    child: ch,
+                    value: cart.itemCountInCart.toString(),
+                  ),
+              child: IconButton(
+                icon: Icon(Icons.shopping_cart),
+                onPressed: () {},
+              )
           ),
         ],
       ),

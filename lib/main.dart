@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/providers/cart_provider.dart';
 import 'package:shopapp/providers/product_provider.dart';
 import 'package:shopapp/screens/product_detail_screen.dart';
 import 'package:shopapp/screens/products_overview_screen.dart';
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
     // Buraya Notifier eklemek buranın her değişiklikte baştan oluşturulacağı
     // anlamına gelmiyor, sadece listener'ların dinledikleri widgetlar rebuild
     // edilir.
-    return ChangeNotifierProvider(
+    return MultiProvider(
       // ChangeNotifierProvider.value( value: ..) şeklinde de kullanılabilir
       // value: ProductProvider(),
       //
@@ -22,7 +23,12 @@ class MyApp extends StatelessWidget {
       //
       //create: (_) => ... eğer kullandığım provider contexten bağımsız olursa
       // böyle de kullanılabilir
-      create: (ctx) => ProductProvider(),
+      // create: (ctx) => ProductProvider(),
+
+      providers: [
+        ChangeNotifierProvider(create: (ctx) => ProductProvider()),
+        ChangeNotifierProvider(create: (ctx) => CartProvider()),
+      ],
       child: MaterialApp(
         title: 'MyShop',
         theme: ThemeData(
