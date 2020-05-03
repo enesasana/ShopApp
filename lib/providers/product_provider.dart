@@ -38,13 +38,19 @@ class ProductProvider with ChangeNotifier {
     ),
   ];
 
+
   List<Product> get items {
     return [..._items];
   }
 
-  Product findById(String id){
+  List<Product> get favoriteItems {
+    return _items.where((product) => product.isFavorite).toList();
+  }
+
+  Product findById(String id) {
     return _items.firstWhere((product) => product.id == id);
   }
+
 
   void addProduct() {
     //_items.add(value);,
@@ -58,4 +64,6 @@ class ProductProvider with ChangeNotifier {
     // sağlar.
     notifyListeners();
   }
+
+
 }
