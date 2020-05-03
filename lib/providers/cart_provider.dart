@@ -25,6 +25,15 @@ class CartProvider with ChangeNotifier {
     return _items.length;
   }
 
+  double get totalAmountOfCart {
+    var total = 0.0;
+    _items.forEach((key, carItem) =>
+    {
+      total += carItem.price * carItem.quantity
+    });
+    return total;
+  }
+
   void addItemToCart(String productId, String title, double price) {
     if (_items.containsKey(productId)) {
       // productId'ye göre varsa önceki CartItem'i buluyor
