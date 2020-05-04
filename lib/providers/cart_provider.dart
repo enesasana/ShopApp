@@ -59,4 +59,12 @@ class CartProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  // Buraya parametre olarak gelen 'id' Dismissible widget'inde 'key'e
+  // atadığımız id oluyor
+  void removeItemFromCart(String productId) {
+    _items.remove(productId);
+    notifyListeners();
+  }
+
 }
