@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.green,
           accentColor: Colors.deepOrange,
           fontFamily: 'Lato',
-
         ),
         home: ProductsOverviewScreen(),
         routes: {
@@ -54,11 +53,11 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Shop'),
+        title: const Text('My Shop'),
       ),
       body: Center(
-        child: Text('center text'),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: const Text('center text'),
+      ),
     );
   }
 }

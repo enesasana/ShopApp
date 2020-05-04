@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/providers/cart_provider.dart' show CartProvider;
@@ -21,11 +22,43 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartData = Provider.of<CartProvider>(context);
+    final itemsInCart = cartData.itemCountInCart; // 0 -> Empty
+    final themeOf = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Cart'),
+        title: const Text('Your Cart'),
       ),
-      body: Column(
+      body: itemsInCart == 0
+          ?
+      Center(
+        child: Container(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'Your cart is empty :( ', style: TextStyle(fontSize: 24),),
+              SizedBox(height: 20,),
+              Container(
+                height: 60,
+                child: RaisedButton.icon(
+                  textTheme: ButtonTextTheme.primary,
+                  icon: Icon(Icons.add_shopping_cart),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  color: themeOf.primaryColor,
+                  splashColor: themeOf.accentColor,
+                  elevation: 4,
+                  label: const Text(
+                    'Go back and buy some!', style: TextStyle(fontSize: 20),),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },),
+              ),
+            ],
+          ),
+        ),
+      )
+          :
+      Column(
         children: <Widget>[
           Card(
             margin: EdgeInsets.all(15),
@@ -34,7 +67,7 @@ class CartScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Total',
                     style: TextStyle(fontSize: 20),
                   ),
@@ -58,7 +91,7 @@ class CartScreen extends StatelessWidget {
             child: OutlineButton.icon(
               splashColor: Theme.of(context).primaryColor,
               padding: EdgeInsets.all(8),
-              label: Text(
+              label: const Text(
                 'Order Now',
                 style: TextStyle(fontSize: 18),
               ),
@@ -71,14 +104,14 @@ class CartScreen extends StatelessWidget {
           SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
-                // cartData.items.length -> sepete eklediğimiz farklı ürün sayısı
+              // cartData.items.length -> sepete eklediğimiz farklı ürün sayısı
                 itemCount: cartData.items.length,
                 itemBuilder: (ctx, index) => CartItem(
-                      cartData.items.values.toList()[index].id,
-                      cartData.items.values.toList()[index].title,
-                      cartData.items.values.toList()[index].quantity,
-                      cartData.items.values.toList()[index].price,
-                    )),
+                  cartData.items.values.toList()[index].id,
+                  cartData.items.values.toList()[index].title,
+                  cartData.items.values.toList()[index].quantity,
+                  cartData.items.values.toList()[index].price,
+                )),
           ),
         ],
       ),

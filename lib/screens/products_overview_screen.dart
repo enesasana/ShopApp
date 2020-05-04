@@ -26,7 +26,24 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
       appBar: AppBar(
         title: const Text('MyShop'),
         actions: <Widget>[
+          Consumer<CartProvider>(
+            // burda parametre olan ch aslında builder fonksiyonunun dışında
+            // tanımlanan IconButton child'ı
+              builder: (_, cart, ch) =>
+                  Badge(
+                    child: ch,
+                    value: cart.itemCountInCart.toString(),
+                  ),
+              child: IconButton(
+                icon: Icon(Icons.shopping_basket),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(CartScreen.routeName);
+                },
+              )
+          ),
           PopupMenuButton(
+            offset: Offset(0, 50),
+            padding: EdgeInsets.all(8),
             icon: Icon(Icons.more_vert,),
             onSelected: (PopupOptions selectedValue) {
               setState(() {
@@ -41,25 +58,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
             itemBuilder: (_) =>
             [
               PopupMenuItem(
-                child: Text('Show Favorites'), value: PopupOptions.Favorites,),
+                child: const Text('Show Favorites'),
+                value: PopupOptions.Favorites,),
               PopupMenuItem(
-                child: Text('All Products'), value: PopupOptions.All,),
+                child: const Text('All Products'), value: PopupOptions.All,),
             ],
-          ),
-          Consumer<CartProvider>(
-            // burda parametre olan ch aslında builder fonksiyonunun dışında
-            // tanımlanan IconButton child'ı
-              builder: (_, cart, ch) =>
-                  Badge(
-                    child: ch,
-                    value: cart.itemCountInCart.toString(),
-                  ),
-              child: IconButton(
-                icon: Icon(Icons.shopping_cart),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(CartScreen.routeName);
-                },
-              )
           ),
         ],
       ),

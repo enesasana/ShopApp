@@ -13,15 +13,26 @@ class ProductsGrid extends StatelessWidget{
   Widget build(BuildContext context) {
     final productsData = Provider.of<ProductProvider>(context);
     final products = showFavorites ? productsData.favoriteItems : productsData.items;
-    return GridView.builder(
+    return products.length == 0
+        ?
+    Center(
+      child: Container(
+        child:
+        const Text(
+          'You\'ve not added any favorite yet ', style: TextStyle(fontSize: 24),
+        ),
+      ),
+    )
+        :
+    GridView.builder(
       padding: const EdgeInsets.all(10.0),
       itemCount: products.length,
       itemBuilder: (ctx, index) => ChangeNotifierProvider.value(
         value: products[index],
         child: ProductItem(
-           // products[index].id,
-           // products[index].title,
-           // products[index].imageUrl
+          // products[index].id,
+          // products[index].title,
+          // products[index].imageUrl
         ),
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
