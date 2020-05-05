@@ -2,7 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/providers/cart_provider.dart' show CartProvider;
+import 'package:shopapp/providers/order_provider.dart';
+import 'package:shopapp/screens/orders_screen.dart';
 import 'package:shopapp/widgets/cart_item.dart';
+import 'package:shopapp/buttons/check_orders.dart';
+import 'package:shopapp/buttons/continue_shopping.dart';
 
 // Hem CartProvider hem de CartItem sınıflarında CartItem isimli iki object
 // oluşturduğumuz ve ikisini de bu sınıfta kullandığımız için Flutter'a hangi
@@ -22,44 +26,45 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartData = Provider.of<CartProvider>(context);
+    final orderData = Provider.of<OrderProvider>(context, listen: false);
     final itemsInCart = cartData.itemCountInCart; // 0 -> Empty
+    final orderCount = orderData.orders.length; // 0 -> Empty
     final themeOf = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Cart'),
       ),
       body: itemsInCart == 0
-          ?
+          ? orderCount == 0
+          ? ContinueShopping('Your cart is empty :(')
+          : // There is not any product in the cart for the moment, but there exist order/
       Center(
         child: Container(
           child: Column(mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text(
-                'Your cart is empty :( ', style: TextStyle(fontSize: 24),),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const Text(
+                  'Your cart is empty but you have order',
+                  textAlign: TextAlign.center, style: TextStyle(fontSize: 24),),
+              ),
               SizedBox(height: 20,),
               Container(
-                height: 60,
-                child: RaisedButton.icon(
-                  textTheme: ButtonTextTheme.primary,
-                  icon: Icon(Icons.add_shopping_cart),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  color: themeOf.primaryColor,
-                  splashColor: themeOf.accentColor,
-                  elevation: 4,
-                  label: const Text(
-                    'Go back and buy some!', style: TextStyle(fontSize: 20),),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },),
+                child: Column(
+                  children: <Widget>[
+                    CheckOrders(OrdersScreen.routeName),
+                    ContinueShopping('')
+                  ],
+                ),
               ),
             ],
           ),
         ),
       )
-          :
+          : // If there exist a product in the Cart
       Column(
         children: <Widget>[
+          // Total Amount
           Card(
             margin: EdgeInsets.all(15),
             child: Padding(
@@ -74,22 +79,23 @@ class CartScreen extends StatelessWidget {
                   Spacer(), // Etrafındaki widget'ları gidebildikleri kadar iter
                   Chip(
                     label: Text(
-                      '\$${cartData.totalAmountOfCart}',
+                      '\$${cartData.totalAmountOfCart.toStringAsFixed(2)}',
                       style: TextStyle(
-                        color: Theme.of(context).primaryTextTheme.title.color,
+                        color: themeOf.primaryTextTheme.title.color,
                       ),
                     ),
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: themeOf.primaryColor,
                   ),
                 ],
               ),
             ),
           ),
+          // Order Now Button
           Container(
             alignment: Alignment.centerRight,
             margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
             child: OutlineButton.icon(
-              splashColor: Theme.of(context).primaryColor,
+              splashColor: themeOf.primaryColor,
               padding: EdgeInsets.all(8),
               label: const Text(
                 'Order Now',
@@ -98,10 +104,15 @@ class CartScreen extends StatelessWidget {
               icon: Icon(Icons.arrow_forward_ios),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
-              onPressed: () {},
+              onPressed: () {
+                orderData.addOrder(
+                    cartData.items.values.toList(), cartData.totalAmountOfCart);
+                cartData.clearCartAfterOrder();
+              },
             ),
           ),
           SizedBox(height: 10),
+          // List of added Products
           Expanded(
             child: ListView.builder(
               // cartData.items.length -> sepete eklediğimiz farklı ürün sayısı

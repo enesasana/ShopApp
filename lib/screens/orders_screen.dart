@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shopapp/providers/order_provider.dart' show OrderProvider;
 import 'package:shopapp/widgets/app_drawer.dart';
 import 'package:shopapp/widgets/order_item.dart';
+import 'package:shopapp/buttons/continue_shopping.dart';
 
 class OrdersScreen extends StatelessWidget {
   static const routeName = '/orders';
@@ -16,9 +17,7 @@ class OrdersScreen extends StatelessWidget {
       ),
       drawer: AppDrawer(),
       body: ordersData.orders.length == 0
-          ? //TODO 1 uyarı mesajı ekle
-          //TODO 2 Sipariş etme özelliği ekle dismissible şeklinde olabilir ya da buton koyabilirsin
-          Text('siparis yok')
+          ? ContinueShopping('You have no order')
           : ListView.builder(
               itemCount: ordersData.orders.length,
               itemBuilder: (ctx, index) => OrderItem(ordersData.orders[index]),

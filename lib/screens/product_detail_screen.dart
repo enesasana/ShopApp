@@ -83,7 +83,7 @@ class ProductDetailScreen extends StatelessWidget {
                     height: 50,
                     child: RaisedButton.icon(
                       textTheme: ButtonTextTheme.primary,
-                      icon: Icon(Icons.add_shopping_cart,),
+                      icon: Icon(Icons.add_shopping_cart, size: 30),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
                       color: themeOf.primaryColor,
