@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/dialogs/sure_dialog.dart';
 import 'package:shopapp/providers/cart_provider.dart';
 
 class CartItem extends StatelessWidget {
@@ -25,8 +26,10 @@ class CartItem extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
       ),
       direction: DismissDirection.endToStart,  // right -> left
-      // Farklı yönlere çekerkeb farklı şeyler olmasını istiyorsa eğer bunun
-      // kontrolünü burda yapabiliriz
+      confirmDismiss: (direction) {
+        return showDialog(context: context,
+            builder: (ctx) => SureDialog((){}));
+      },
       onDismissed: (direction) {
         cartData.removeItemFromCart(productId);
       },

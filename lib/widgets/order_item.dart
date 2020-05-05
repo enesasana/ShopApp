@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/dialogs/sure_dialog.dart';
 
 // iki aynı OrderItem isimli widget olduğu için hangisini kullanacağımızı
 // söylememiz lazım
@@ -84,7 +85,10 @@ class _OrderItemState extends State<OrderItem> {
                             elevation: 5,
                             color: themeOf.accentColor,
                             onPressed: () {
-                              orderData.cancelOrder(widget.order.id);
+                              showDialog(context: context, builder: (ctx) =>
+                                  SureDialog(() {
+                                    orderData.cancelOrder(widget.order.id);}
+                                  ));
                             },
                           ),
                         ),

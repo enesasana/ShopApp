@@ -40,6 +40,25 @@ class ProductItem extends StatelessWidget {
               ),
               onPressed: () {
                 product.toggleFavoriteStatus();
+                Scaffold.of(context).hideCurrentSnackBar();
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: product.isFavorite
+                      ? Text('${product.title} added to Favorites!')
+                      : Text('${product.title} removed from Favorites!'),
+                  behavior: SnackBarBehavior.floating,
+                  elevation: 4,
+                  duration: Duration(
+                    milliseconds: 500
+                  ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  action: SnackBarAction(
+                    label: 'UNDO',
+                    onPressed: () {
+                      product.toggleFavoriteStatus();
+                    },
+                  ),
+                ));
               },
             ),
           ),
