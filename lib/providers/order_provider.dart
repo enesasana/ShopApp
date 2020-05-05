@@ -35,4 +35,10 @@ class OrderProvider with ChangeNotifier {
     );
     notifyListeners();
   }
+
+  void cancelOrder(String orderId) {
+    _orders.removeWhere((ord) => ord.id == orderId);
+    notifyListeners();
+  }
+
 }
