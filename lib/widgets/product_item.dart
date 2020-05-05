@@ -55,6 +55,25 @@ class ProductItem extends StatelessWidget {
             ),
             onPressed: () {
               cart.addItemToCart(product.id, product.title, product.price);
+              // Üst üste ürün eklerken altta sürekli snackbar çıkmasın diye,
+              // eğer o anda zaten bi snackbar varsa onu otomatik gizleyecek
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text('${product.title} added to Cart!'),
+                behavior: SnackBarBehavior.floating,
+                elevation: 4,
+                duration: Duration(
+                  milliseconds: 800
+                ),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                action: SnackBarAction(
+                  label: 'UNDO',
+                  onPressed: () {
+                    cart.removeSingleIem(product.id);
+                  },
+                ),
+              ));
             },
           ),
         ),
