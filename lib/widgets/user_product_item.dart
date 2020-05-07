@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopapp/dialogs/sure_dialog.dart';
+import 'package:shopapp/providers/product_provider.dart';
 import 'package:shopapp/screens/edit_product_screen.dart';
 
 class UserProductItem extends StatelessWidget {
@@ -33,7 +36,14 @@ class UserProductItem extends StatelessWidget {
                 Icons.delete,
                 color: Theme.of(context).errorColor,
               ),
-              onPressed: () {},
+              onPressed: () {
+                showDialog(context: context, builder: (ctx) =>
+                    SureDialog(() {
+                      Provider.of<ProductProvider>(context, listen: false)
+                          .deleteProduct(id);
+                    }
+                    ));
+              },
             )
           ],
         ),
