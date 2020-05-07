@@ -52,8 +52,19 @@ class ProductProvider with ChangeNotifier {
   }
 
 
-  void addProduct() {
-    //_items.add(value);,
+  void addProduct(Product product) {
+    final newProduct = Product(
+      id: DateTime.now().toString(),
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+    );
+
+    _items.add(newProduct);
+    //_items.insert(0, newProduct);  // at the start of the list
+
+
     // Bu sınıfı dinleyen sınıf veya widgetlar için bu sınıfta veriler üzerinde
     // herhangi bir değişiklik gerçekleşirse aşağıdaki metod ile bu verileri
     // kullanan veya bir şekilde ilişkisi olan widgetlar bu değişiklikten
