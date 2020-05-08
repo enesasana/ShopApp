@@ -33,6 +33,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   // Zaten bi defa yüklendiyse eğer veriler, her değişiklikte bu metodu tekrar
   // tekrar çağırmasın
   var _isInit = true;
+  var _isLoading = false;
 
   @override
   void initState() {
@@ -97,15 +98,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
     _form.currentState.save();
+    setState(() {
+      _isLoading = true;
+    });
     if (_editedProduct.id != null) {
-        Provider.of<ProductProvider>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
+      Provider.of<ProductProvider>(context, listen: false).updateProduct(
+          _editedProduct.id, _editedProduct);
+      setState(() {
+        _isLoading = false;
+      });
     }
     else {
       // Ürüne yapılan değişiklikleri dinlemediğimiz için listen: false
       Provider.of<ProductProvider>(context, listen: false).addProduct(
-          _editedProduct);
+          _editedProduct)
+          .then((_) {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
+      });
     }
-    Navigator.of(context).pop();
+    // Navigator.of(context).pop();
   }
 
   @override
@@ -120,7 +134,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
           )
         ],
       ),
-      body: Padding(
+      body: _isLoading == true
+          ? Center(child: CircularProgressIndicator(),)
+          : Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _form,

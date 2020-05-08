@@ -54,7 +54,7 @@ class ProductProvider with ChangeNotifier {
   }
 
 
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     const url = 'https://shop-app-467f5.firebaseio.com/products.json';
     http.post(url, body: json.encode({
       'title': product.title,
