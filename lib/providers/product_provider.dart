@@ -1,17 +1,19 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shopapp/providers/product.dart';
+import 'package:http/http.dart' as http; // Prefix
 
 class ProductProvider with ChangeNotifier {
 
   List<Product> _items = [
     Product(
-    id: 'p1',
-    title: 'Red Shirt',
-    description: 'A red shirt - it is pretty red!',
-    price: 29.99,
-    imageUrl:
-    'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-  ),
+      id: 'p1',
+      title: 'Red Shirt',
+      description: 'A red shirt - it is pretty red!',
+      price: 29.99,
+      imageUrl:
+      'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
+    ),
     Product(
       id: 'p2',
       title: 'Trousers',
@@ -53,17 +55,26 @@ class ProductProvider with ChangeNotifier {
 
 
   void addProduct(Product product) {
-    final newProduct = Product(
-      id: DateTime.now().toString(),
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      imageUrl: product.imageUrl,
-    );
-
-    _items.add(newProduct);
-    //_items.insert(0, newProduct);  // at the start of the list
-
+    const url = 'https://shop-app-467f5.firebaseio.com/products.json';
+    http.post(url, body: json.encode({
+      'title': product.title,
+      'description': product.description,
+      'price': product.price,
+      'imageUrl': product.imageUrl,
+      'isFavorite': product.isFavorite,
+    }),).then((response) {
+      print(json.decode(response.body));
+      final newProduct = Product(
+        id: json.decode(response.body)['name'],
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+      );
+      _items.add(newProduct);
+      //_items.insert(0, newProduct);  // at the start of the list
+      notifyListeners();
+    });
 
     // Bu sınıfı dinleyen sınıf veya widgetlar için bu sınıfta veriler üzerinde
     // herhangi bir değişiklik gerçekleşirse aşağıdaki metod ile bu verileri
@@ -73,7 +84,7 @@ class ProductProvider with ChangeNotifier {
     // Çünkü veri üzerindeki değişiklikleri tek bir noktadan yapıp ordan
     // distribute etmek hem passing data hem de bunu distribute ederken kolaylık
     // sağlar.
-    notifyListeners();
+    // notifyListeners();
   }
 
   void updateProduct(String id, Product newProduct) {
