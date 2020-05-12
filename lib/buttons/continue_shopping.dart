@@ -17,10 +17,10 @@ class ContinueShopping extends StatelessWidget {
             style: TextStyle(fontSize: 24),
           ),
           SizedBox(
-            height: 20,
+            height: 10,
           ),
           Container(
-            height: 60,
+            height: 40,
             child: RaisedButton.icon(
               textTheme: ButtonTextTheme.primary,
               icon: Icon(Icons.add_shopping_cart),
@@ -31,7 +31,7 @@ class ContinueShopping extends StatelessWidget {
               elevation: 5,
               label: const Text(
                 'Continue Shopping',
-                style: TextStyle(fontSize: 22),
+                style: TextStyle(fontSize: 20),
               ),
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed('/');

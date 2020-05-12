@@ -27,93 +27,70 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cartData = Provider.of<CartProvider>(context);
     final orderData = Provider.of<OrderProvider>(context, listen: false);
-    final itemsInCart = cartData.itemCountInCart; // 0 -> Empty
     final orderCount = orderData.orders.length; // 0 -> Empty
     final themeOf = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Cart'),
       ),
-      body: itemsInCart == 0
-          ? orderCount == 0
-          ? ContinueShopping('Your cart is empty :(')
-          : // There is not any product in the cart for the moment, but there exist order/
-      Center(
-        child: Container(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: const Text(
-                  'Your cart is empty but you have order',
-                  textAlign: TextAlign.center, style: TextStyle(fontSize: 24),),
-              ),
-              SizedBox(height: 20,),
-              Container(
-                child: Column(
-                  children: <Widget>[
-                    CheckOrders(OrdersScreen.routeName),
-                    ContinueShopping('')
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      )
-          : // If there exist a product in the Cart
+      body:
       Column(
         children: <Widget>[
-          // Total Amount
           Card(
             margin: EdgeInsets.all(15),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                  const Text(
-                    'Total',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Spacer(), // Etrafındaki widget'ları gidebildikleri kadar iter
-                  Chip(
-                    label: Text(
-                      '\$${cartData.totalAmountOfCart.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        color: themeOf.primaryTextTheme.title.color,
+                  Row(
+                    children: <Widget>[
+                      const Text(
+                        'Total',
+                        style: TextStyle(fontSize: 24),
                       ),
-                    ),
-                    backgroundColor: themeOf.primaryColor,
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 1.0),
+                        child: Chip(
+                          elevation: 5,
+                          label: Text(
+                            '\t\$${cartData.totalAmountOfCart.toStringAsFixed(
+                                2)}\t',
+                            style: TextStyle(
+                                color: themeOf.primaryTextTheme.title.color,
+                                fontSize: 20
+                            ),
+                          ),
+                          backgroundColor: themeOf.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Container(
+                          alignment: Alignment.centerRight,
+                          child: OrderNowButton(cartData: cartData,)
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
-          // Order Now Button
-          Container(
-            alignment: Alignment.centerRight,
-            margin: EdgeInsets.fromLTRB(0, 0, 15, 0),
-            child: OutlineButton.icon(
-              splashColor: themeOf.primaryColor,
-              padding: EdgeInsets.all(8),
-              label: const Text(
-                'Order Now',
-                style: TextStyle(fontSize: 18),
-              ),
-              icon: Icon(Icons.arrow_forward_ios),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              onPressed: () {
-                orderData.addOrder(
-                    cartData.items.values.toList(), cartData.totalAmountOfCart);
-                cartData.clearCartAfterOrder();
-              },
-            ),
-          ),
           SizedBox(height: 10),
           // List of added Products
-          Expanded(
+          cartData.totalAmountOfCart == 0
+              ? orderCount == 0
+              ? Card(margin:EdgeInsets.all(15),child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ContinueShopping('Your cart is empty :('),
+              ))
+              : ShowButtons()
+              : Expanded(
             child: ListView.builder(
               // cartData.items.length -> sepete eklediğimiz farklı ürün sayısı
                 itemCount: cartData.items.length,
@@ -126,6 +103,80 @@ class CartScreen extends StatelessWidget {
                 )),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class OrderNowButton extends StatefulWidget {
+  final CartProvider cartData;
+
+  const OrderNowButton({
+    Key key,
+    @required this.cartData,
+  }) : super(key: key);
+
+  @override
+  _OrderNowButtonState createState() => _OrderNowButtonState();
+}
+
+class _OrderNowButtonState extends State<OrderNowButton> {
+  var _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final themeOf = Theme.of(context);
+    return _isLoading
+        ? CircularProgressIndicator(strokeWidth: 2.0,)
+        :
+    OutlineButton.icon(
+      splashColor: themeOf.primaryColor,
+      label: const Text(
+        'Order Now',
+        style: TextStyle(fontSize: 18),
+      ),
+      icon: Icon(Icons.arrow_forward_ios),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)),
+      onPressed: (widget.cartData.totalAmountOfCart == 0 || _isLoading == true)
+          ? null
+          : () async {
+        setState(() {
+          _isLoading = true;
+        });
+        await Provider.of<OrderProvider>(context, listen: false).addOrder(
+            widget.cartData.items.values.toList(),
+            widget.cartData.totalAmountOfCart);
+        setState(() {
+          _isLoading = false;
+        });
+        widget.cartData.clearCartAfterOrder();
+      },
+    );
+  }
+}
+
+class ShowButtons extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Card(
+        margin: EdgeInsets.all(15),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const Text(
+                  'Your cart is empty but you have order',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24),),
+              ),
+              CheckOrders(OrdersScreen.routeName),
+              ContinueShopping('')
+            ],
+          ),),
       ),
     );
   }

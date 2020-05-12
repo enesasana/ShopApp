@@ -9,14 +9,14 @@ class CheckOrders extends StatelessWidget {
   Widget build(BuildContext context) {
     return RaisedButton.icon(
       textTheme: ButtonTextTheme.primary,
-      icon: Icon(Icons.payment, size: 30,),
+      icon: Icon(Icons.payment,),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20)),
       color: Theme.of(context).primaryColor,
       splashColor: Theme.of(context).accentColor,
       elevation: 5,
       label: const Text(
-        'Check Orders', style: TextStyle(fontSize: 24),),
+        'Check Orders', style: TextStyle(fontSize: 20),),
       onPressed: () {
         Navigator.of(context).pushNamed(route);
       },);
