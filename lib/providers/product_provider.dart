@@ -57,13 +57,13 @@ class ProductProvider with ChangeNotifier {
   Future<void> fetchAndSetProducts() async {
     const url = 'https://shop-app-467f5.firebaseio.com/products.json';
     try {
+      final List<Product> loadedProducts = [];
       final response = await http.get(url);
       // Burada bize dönen şey Map{Map{}} olduğu için o şekilde kabul etmemiz
       // gerekiyor. Bunun için de Map<String, dynamic> veya Map<String, Object>
       // kullanılabilir.
       final fetchedData = json.decode(response.body) as Map<String, dynamic>;
-
-      final List<Product> loadedProducts = [];
+      if(fetchedData == null) return; // If there is no product yet, terminate
       fetchedData.forEach((productId, prodcutData) {
         loadedProducts.add(Product(
           id: productId,
