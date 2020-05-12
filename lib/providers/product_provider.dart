@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shopapp/models/http_exception.dart';
 import 'package:shopapp/providers/product.dart';
 import 'package:http/http.dart' as http; // Prefix
 
@@ -133,8 +134,21 @@ class ProductProvider with ChangeNotifier {
     //notifyListeners();
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((product) => product.id == id);
+  Future<void> deleteProduct(String id) async {
+    // Optimistic Updating
+    final url = 'https://shop-app-467f5.firebaseio.com/products/$id.json';
+    final existingProductIndex = _items.indexWhere((product) =>
+    product.id == id);
+    var existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+    final response = await http.delete(url);
+    // Burda 405 kodlu bi hata olduğu için bu şekilde ekleme yapıldı
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete product.');
+    }
+    existingProduct = null;
   }
 }

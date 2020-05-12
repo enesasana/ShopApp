@@ -14,6 +14,7 @@ class UserProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold.of(context);
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -37,12 +38,23 @@ class UserProductItem extends StatelessWidget {
                 color: Theme.of(context).errorColor,
               ),
               onPressed: () {
-                showDialog(context: context, builder: (ctx) =>
-                    SureDialog(() {
-                      Provider.of<ProductProvider>(context, listen: false)
-                          .deleteProduct(id);
-                    }
-                    ));
+                try {
+                  // TODO this is not working with sure dialog Fix it
+                  showDialog(context: context, builder: (ctx) =>
+                      SureDialog(() async {
+                        print('dialog block before delete');
+                        await Provider.of<ProductProvider>(
+                            context, listen: false)
+                            .deleteProduct(id);
+                        print('dialog block after delete');
+                      }
+                      ));
+                } catch (error) {
+                  scaffold.showSnackBar(SnackBar(
+                    content: Text(
+                      'Deleting failed!', textAlign: TextAlign.center,),
+                  ));
+                }
               },
             )
           ],
