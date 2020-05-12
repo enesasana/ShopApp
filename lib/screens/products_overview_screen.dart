@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopapp/providers/cart_provider.dart';
+import 'package:shopapp/providers/product_provider.dart';
 import 'package:shopapp/screens/cart_screen.dart';
 import 'package:shopapp/widgets/app_drawer.dart';
 import 'package:shopapp/widgets/badge.dart';
@@ -20,6 +21,41 @@ class ProductsOverviewScreen extends StatefulWidget {
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
 
   var _showOnlyFavorites = false;
+  var _isInit = true;
+  var _isLoading = false;
+
+  // In order to fetch the data from firebase
+  @override
+  void initState() {
+    // WON'T WORK - 'of' logic does not work in initState like ModalRoute.of
+    // Provider.of<ProductProvider>(context,).fetchAndSetProducts();
+    // Provider.of<ProductProvider>(context, listen: false).fetchAndSetProducts(); -> this can be work
+
+    // Instead you could use this -kinda hack
+    /*Future.delayed(Duration.zero).then((_){
+      Provider.of<ProductProvider>(context,).fetchAndSetProducts();
+    }); */
+
+    // But also didChange Dependencies() approach is much better
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // Sadece bir kere çalıştırmak için
+    if (_isInit) {
+      // Without then it works. I added then method in order to tell the users
+      // something going on for the moment
+      setState(() {
+        _isLoading = true;
+      });
+      Provider.of<ProductProvider>(context,).fetchAndSetProducts().then((_) {
+        _isLoading = false;
+      });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +104,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(_showOnlyFavorites),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator(),)
+          : ProductsGrid(_showOnlyFavorites),
     );
   }
 }

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http; // Prefix
 
 class ProductProvider with ChangeNotifier {
 
-  List<Product> _items = [
+  List<Product> _items = [ /*
     Product(
       id: 'p1',
       title: 'Red Shirt',
@@ -38,6 +38,7 @@ class ProductProvider with ChangeNotifier {
       imageUrl:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     ),
+  */
   ];
 
   List<Product> get items {
@@ -50,6 +51,34 @@ class ProductProvider with ChangeNotifier {
 
   Product findById(String id) {
     return _items.firstWhere((product) => product.id == id);
+  }
+
+  Future<void> fetchAndSetProducts() async {
+    const url = 'https://shop-app-467f5.firebaseio.com/products.json';
+    try {
+      final response = await http.get(url);
+      // Burada bize dönen şey Map{Map{}} olduğu için o şekilde kabul etmemiz
+      // gerekiyor. Bunun için de Map<String, dynamic> veya Map<String, Object>
+      // kullanılabilir.
+      final fetchedData = json.decode(response.body) as Map<String, dynamic>;
+
+      final List<Product> loadedProducts = [];
+      fetchedData.forEach((productId, prodcutData) {
+        loadedProducts.add(Product(
+          id: productId,
+          title: prodcutData['title'],
+          description: prodcutData['description'],
+          price: prodcutData['price'],
+          imageUrl: prodcutData['imageUrl'],
+          isFavorite: prodcutData['isFavorite'],
+        ));
+      });
+      _items = loadedProducts;
+      notifyListeners();
+    }
+    catch (error) {
+      throw error;
+    }
   }
 
   Future<void> addProduct(Product product) async {
