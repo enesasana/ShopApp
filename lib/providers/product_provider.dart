@@ -108,15 +108,29 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final productIndex = _items.indexWhere((prod) => prod.id == id);
     if(productIndex >= 0){
-      _items[productIndex] = newProduct;
+      try {
+        // Burada encode içinde verdiğimiz parametrelerin üzerine yazar
+        // eklemediğimiz parametre varsa ona dokunmaz
+        final url = 'https://shop-app-467f5.firebaseio.com/products/$id.json';
+        await http.patch(url, body: json.encode({
+          'title': newProduct.title,
+          'description': newProduct.description,
+          'price': newProduct.price,
+          'imageUrl': newProduct.imageUrl,
+        }));
+        _items[productIndex] = newProduct;
+        notifyListeners();
+      } catch (error) {
+        throw error;
+      }
     }
     else {
       print('...');
     }
-    notifyListeners();
+    //notifyListeners();
   }
 
   void deleteProduct(String id) {

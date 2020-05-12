@@ -103,13 +103,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
     if (_editedProduct.id != null) {
-      // Burası da asyn await olabilir mi olmalı mı ?
-      Provider.of<ProductProvider>(context, listen: false)
-          .updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
+      try {
+        await Provider.of<ProductProvider>(context, listen: false)
+            .updateProduct(_editedProduct.id, _editedProduct);
+      } catch (error) {
+        await showDialog(
+            context: context, builder: (context) => ErrorDialog());
+      }
     }
     else {
       try {
@@ -120,13 +120,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
         await showDialog(
             context: context, builder: (context) => ErrorDialog());
       }
-      finally {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
-      }
+      // finally {
+      //  setState(() {
+      //    _isLoading = false;
+      //  });
+      //  Navigator.of(context).pop();
+      //}
     }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).pop();
   }
 
   @override
