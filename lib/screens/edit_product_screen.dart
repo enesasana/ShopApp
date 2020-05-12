@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopapp/dialogs/error_dialog.dart';
 import 'package:shopapp/providers/product.dart';
 import 'package:shopapp/providers/product_provider.dart';
 
@@ -92,7 +93,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
@@ -102,25 +103,30 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
     if (_editedProduct.id != null) {
-      Provider.of<ProductProvider>(context, listen: false).updateProduct(
-          _editedProduct.id, _editedProduct);
+      // Burası da asyn await olabilir mi olmalı mı ?
+      Provider.of<ProductProvider>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
       setState(() {
         _isLoading = false;
       });
       Navigator.of(context).pop();
     }
     else {
-      // Ürüne yapılan değişiklikleri dinlemediğimiz için listen: false
-      Provider.of<ProductProvider>(context, listen: false).addProduct(
-          _editedProduct)
-          .then((_) {
+      try {
+        // Ürüne yapılan değişiklikleri dinlemediğimiz için listen: false
+        await Provider.of<ProductProvider>(context, listen: false)
+            .addProduct(_editedProduct);
+      } catch (error) {
+        await showDialog(
+            context: context, builder: (context) => ErrorDialog());
+      }
+      finally {
         setState(() {
           _isLoading = false;
         });
         Navigator.of(context).pop();
-      });
+      }
     }
-    // Navigator.of(context).pop();
   }
 
   @override
