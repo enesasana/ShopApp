@@ -107,6 +107,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       setState(() {
         _isLoading = false;
       });
+      Navigator.of(context).pop();
     }
     else {
       // Ürüne yapılan değişiklikleri dinlemediğimiz için listen: false
@@ -134,7 +135,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           )
         ],
       ),
-      body: _isLoading == true
+      body: _isLoading
           ? Center(child: CircularProgressIndicator(),)
           : Padding(
         padding: const EdgeInsets.all(16.0),
